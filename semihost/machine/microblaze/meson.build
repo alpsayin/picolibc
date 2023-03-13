@@ -1,9 +1,7 @@
-#!/bin/sh
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright © 2023 Advanced Micro Devices, Inc. (AMD)
-# Copyright © 2023 Alp Sayin
+# Copyright © 2021 Keith Packard
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -35,10 +33,37 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Avoid building m64 because it's broken in so many places.
-exec "$(dirname "$0")"/do-configure microblazeel-zephyr-elf \
-  -Dtests-enable-stack-protector=false \
-  -Dtests=true \
-  -Dtests-enable-posix-io=false \
-  -Dmultilib-list=.,bs,le,m,m/mh,le/m,le/m/mh,bs/le,bs/m,bs/m/mh,bs/le/m,bs/le/m/mh \
-  "$@"
+lib_semihost_srcs = [
+  'uart_exit.c',
+  'uart_kill.c',
+  'uart_stub.c',
+  ]
+
+if tinystdio
+  lib_semihost_srcs += 'uart_io.c'
+endif
+
+has_semihost = true
+
+foreach target : targets
+  value = get_variable('target_' + target)
+
+  instdir = join_paths(lib_dir, value[0])
+
+  if target == ''
+    libsemihost_name = 'semihost'
+  else
+    libsemihost_name = join_paths(target, 'libsemihost')
+  endif
+
+  local_lib_semihost_target = static_library(libsemihost_name,
+				       lib_semihost_srcs,
+				       install : true,
+				       install_dir : instdir,
+				       include_directories : inc,
+				       c_args : value[1],
+				       pic: false)
+
+  set_variable('lib_semihost' + target, local_lib_semihost_target)
+
+endforeach

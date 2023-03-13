@@ -2,8 +2,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright © 2023 Advanced Micro Devices, Inc. (AMD)
-# Copyright © 2023 Alp Sayin
+# Copyright © 2020 Keith Packard
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -35,10 +34,19 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Avoid building m64 because it's broken in so many places.
-exec "$(dirname "$0")"/do-configure microblazeel-zephyr-elf \
-  -Dtests-enable-stack-protector=false \
-  -Dtests=true \
-  -Dtests-enable-posix-io=false \
-  -Dmultilib-list=.,bs,le,m,m/mh,le/m,le/m/mh,bs/le,bs/m,bs/m/mh,bs/le/m,bs/le/m/mh \
-  "$@"
+dir="$(dirname "$0")"
+
+qemu="qemu-system-xilinx-microblazeel"
+
+# select the program
+elf="$1"
+shift
+
+"$dir"/monitor-e9 $qemu \
+	-monitor none \
+        -machine petalogix-s3adsp1800 \
+	-serial stdio \
+	-nic none \
+	-kernel "$elf" \
+	-nographic \
+	"$@" < /dev/null
