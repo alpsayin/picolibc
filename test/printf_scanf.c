@@ -293,6 +293,7 @@ main(void)
             return 1;
         }
 #endif
+        printf("main\n");
 #if 0
 	double	a;
 
@@ -317,9 +318,11 @@ main(void)
 #endif
 
 #ifndef NO_WIDE_IO
+        wprintf(L"before swscanf test %ls\n", L"yup, before it");
         unsigned wt;
         for (wt = 0; wtest[wt].str; wt++) {
             void *extra;
+            wprintf(L"testing %ls fmt %ls\n", wtest[wt].str, wtest[wt].fmt);
             int wtr = swscanf(wtest[wt].str, wtest[wt].fmt, &extra);
             if (wtr != wtest[wt].expect) {
                 printf("%d str %ls fmt %ls expected %d got %d\n", wt,
@@ -344,6 +347,8 @@ main(void)
                 ++errors;
             }
         }
+        printf("after swscanf test\n");
+        wprintf(L"hello world %g\n", 1.0);
 #endif
 #endif
 

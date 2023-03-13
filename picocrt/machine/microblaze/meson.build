@@ -1,9 +1,7 @@
-#!/bin/sh
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright © 2023 Advanced Micro Devices, Inc. (AMD)
-# Copyright © 2023 Alp Sayin
+# Copyright © 2023 Keith Packard
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -34,11 +32,4 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-
-# Avoid building m64 because it's broken in so many places.
-exec "$(dirname "$0")"/do-configure microblazeel-zephyr-elf \
-  -Dtests-enable-stack-protector=false \
-  -Dtests=true \
-  -Dtests-enable-posix-io=false \
-  -Dmultilib-list=.,bs,le,m,m/mh,le/m,le/m/mh,bs/le,bs/m,bs/m/mh,bs/le/m,bs/le/m/mh \
-  "$@"
+src_picocrt += files('crt0.S', 'crt1.c')
