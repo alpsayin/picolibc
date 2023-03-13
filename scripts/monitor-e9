@@ -21,6 +21,7 @@ with subprocess.Popen(sys.argv[1:], stdout=subprocess.PIPE, stderr=subprocess.DE
                     status = int(words[1])
                     if status >= 128:
                         status = status | 1
+                    print('exit {}\n'.format(status))
                     break
         sys.stdout.write(c.decode('utf-8'))
 
