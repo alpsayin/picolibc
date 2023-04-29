@@ -49,6 +49,7 @@ static volatile sig_atomic_t     handler_sig_received;
 static void
 signal_handler(int sig)
 {
+    printf("Hello from signal_handler!\n");
     handler_sig_received = sig;
     if (sig == (int) handler_sig_expect)
         handler_result = HANDLER_SUCCESS;
@@ -76,12 +77,15 @@ int main(void)
     void (*old_func)(int);
     void (*new_func)(int);
     void (*prev_func)(int);
+    void (*expected_new_func)(int);
     int ret;
     unsigned u;
     int fail = 0;
     int mode;
+    printf("Hello test-raise!\n");
 
     for (u = 0; u < NTEST_SIG; u++) {
+        printf("%u/%d\n", u, NTEST_SIG);
         int sig = test_signals[u];
         prev_func = SIG_DFL;
         for (mode = 0; mode < MODE_MAX; mode++) {
@@ -93,6 +97,7 @@ int main(void)
                 new_func = signal_handler;
                 break;
             }
+            printf("%d/%d\n", mode, MODE_MAX);
 
             /* Set up the signal handler */
             old_func = signal(sig, new_func);
@@ -100,6 +105,17 @@ int main(void)
                 printf("signal %d: old_func was %p, not SIG_DFL\n",
                        sig, old_func);
                 fail = 1;
+            }
+            printf("signal %d: old_func was %p\n", sig, old_func);
+            expected_new_func = signal(sig, new_func);
+            if (expected_new_func != new_func) {
+                printf("signal %d: expected_new_func was %p, NOT new_func=%p\n",
+                       sig, expected_new_func, new_func);
+                fail = 1;
+            }
+            else {
+                printf("signal %d: expected_new_func is %p, as expected new_func=%p\n",
+                       sig, expected_new_func, new_func);
             }
 
             /* Invoke the handler */
@@ -112,6 +128,8 @@ int main(void)
                 printf("signal %d: raise returned %d\n", sig, ret);
                 fail = 1;
             }
+            printf("signal %d: raise returned %d\n", sig, ret);
+
 
             /* Validate the results */
             switch (mode) {
