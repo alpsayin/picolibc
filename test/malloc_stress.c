@@ -184,12 +184,14 @@ main(void)
 		long i;
 		size_t in_use;
 
+		printf("loop %d\n", loops);
 		reset_blocks();
 		in_use = 0;
 
 		/* Test slowly increasing size of a block using realloc */
 
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("num_malloc_i %ld\n", i);
 			result += check_block("grow", 0);
                         size_t new_size = block_size[0] + randint(MAX_ALLOC);
                         uint8_t *new_block = realloc(blocks[0], new_size);
@@ -218,6 +220,7 @@ main(void)
 #endif
 		/* Test huge malloc sizes */
 		for (i = sizeof(size_t) * 8 - 2; i < (long) (sizeof(size_t) * 8); i++) {
+			printf("huge malloc i %ld\n", i);
 			blocks[0] = malloc((size_t) 1 << i);
 			if (blocks[0])
 				free(blocks[0]);
@@ -232,6 +235,7 @@ main(void)
 
 		/* Test allocating negative amounts */
 		for (i = -1; i >= -128; i--) {
+			printf("negative malloc i %ld\n", i);
 			blocks[0] = malloc((size_t) i);
 #if (((__GNUC__ == 4 && __GNUC_MINOR__ >= 2) || __GNUC__ > 4) && !defined(__clang__))
 #pragma GCC diagnostic pop
@@ -252,6 +256,7 @@ main(void)
 
 		/* Test allocating random chunks */
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random malloc i %ld\n", i);
 			size_t size = randint(MAX_ALLOC);
                         uint8_t *new_block = malloc(size);
                         if (new_block || size == 0) {
@@ -269,6 +274,7 @@ main(void)
 		 */
 		shuffle_order();
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random realloc i %ld\n", i);
 			size_t size = randint(MAX_ALLOC);
 			int j = order[i];
                         uint8_t *new_block = realloc(blocks[j], size);
@@ -286,6 +292,7 @@ main(void)
 
 		shuffle_order();
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random realloc check & free i %ld\n", i);
 			int j = order[i];
 			check_block("realloc block", j);
 			free(blocks[j]);
@@ -301,6 +308,8 @@ main(void)
 		reset_blocks();
 
 		for (i = 0; i < NUM_MALLOC; i++) {
+
+			printf("random unaligned memalign i %ld\n", i);
 			size_t size = randint(MAX_ALLOC);
 			size_t align = 1 << (3 + randint(7));
 
@@ -323,6 +332,7 @@ main(void)
 
 		shuffle_order();
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random memalign check & free i %ld\n", i);
 			int j = order[i];
 			check_block("free", j);
 			free(blocks[j]);
