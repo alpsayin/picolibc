@@ -56,6 +56,10 @@ main(void)
 
     __asm__(".word 0x00000000");
 
+#elif defined(__MICROBLAZE__)
+
+    __asm__(".word 0x00000000");
+
 #else
 
 #define NO_INVALID
