@@ -168,12 +168,14 @@ main(void)
 		long i;
 		size_t in_use;
 
+		printf("loop %d\n", loops);
 		reset_blocks();
 		in_use = 0;
 
 		/* Test slowly increasing size of a block using realloc */
 
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("num_malloc_i %ld\n", i);
 			result += check_block("grow", 0);
 			block_size[0] += randint(MAX_ALLOC);
 			in_use = block_size[0];
@@ -198,6 +200,7 @@ main(void)
 #endif
 		/* Test huge malloc sizes */
 		for (i = sizeof(size_t) * 8 - 2; i < (long) (sizeof(size_t) * 8); i++) {
+			printf("huge malloc i %ld\n", i);
 			blocks[0] = malloc((size_t) 1 << i);
 			if (blocks[0])
 				free(blocks[0]);
@@ -212,6 +215,7 @@ main(void)
 
 		/* Test allocating negative amounts */
 		for (i = -1; i >= -128; i--) {
+			printf("negative malloc i %ld\n", i);
 			blocks[0] = malloc((size_t) i);
 #pragma GCC diagnostic pop
 			if (blocks[0]) {
@@ -230,6 +234,7 @@ main(void)
 
 		/* Test allocating random chunks */
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random malloc i %ld\n", i);
 			size_t size = randint(MAX_ALLOC);
 			block_size[i] = size;
 			blocks[i] = malloc(size);
@@ -244,6 +249,7 @@ main(void)
 		 */
 		shuffle_order();
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random realloc i %ld\n", i);
 			size_t size = randint(MAX_ALLOC);
 			int j = order[i];
 			in_use -= block_size[j];
@@ -258,6 +264,7 @@ main(void)
 
 		shuffle_order();
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random realloc check & free i %ld\n", i);
 			int j = order[i];
 			check_block("realloc block", j);
 			free(blocks[j]);
@@ -273,6 +280,8 @@ main(void)
 		reset_blocks();
 
 		for (i = 0; i < NUM_MALLOC; i++) {
+
+			printf("random unaligned memalign i %ld\n", i);
 			size_t size = randint(MAX_ALLOC);
 			size_t align = 1 << (3 + randint(7));
 
@@ -292,6 +301,7 @@ main(void)
 
 		shuffle_order();
 		for (i = 0; i < NUM_MALLOC; i++) {
+			printf("random memalign check & free i %ld\n", i);
 			int j = order[i];
 			check_block("free", j);
 			free(blocks[j]);
