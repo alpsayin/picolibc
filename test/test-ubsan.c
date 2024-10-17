@@ -53,6 +53,7 @@
 static void
 abrt_handler(int sig)
 {
+    printf("in abort handler\n");
     if (sig == (int) SIGABRT) {
 #ifdef SANITIZE_TRAP_ON_ERROR
         _Exit(1);
