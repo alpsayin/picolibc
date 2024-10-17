@@ -45,3 +45,7 @@ lost+found
 # ignore meson build directories
 
 build-*/
+
+# ignore .vscode setting, configuration, task etc. files.
+
+.vscode/
