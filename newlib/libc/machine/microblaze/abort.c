@@ -87,6 +87,7 @@ abort (void)
 
   while (1)
     {
+      raise (SIGABRT);
       exit(1);
     }
 }
