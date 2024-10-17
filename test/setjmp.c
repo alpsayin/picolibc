@@ -62,8 +62,11 @@ main(void)
 	printf("setjmp 2 returns %d\n", ret);
 	if (!ret) {
 		if (been_here) {
-			printf("already been here (longjmp(env, 0) returned 0?)\n");
+			printf("already been_here (longjmp(env, 0) returned 0?)\n");
 			return 2;
+		}
+		else {
+			printf("NOT been_here\n");
 		}
 		been_here++;
 		func(env, 0);
