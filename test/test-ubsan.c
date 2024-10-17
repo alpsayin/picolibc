@@ -53,6 +53,7 @@
 static void
 abrt_handler(int sig)
 {
+    printf("in abort handler\n");
     if (sig == (int) SIGABRT)
         _Exit(0);
     else {
