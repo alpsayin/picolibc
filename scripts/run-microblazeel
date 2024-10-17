@@ -51,5 +51,4 @@ shift
 	-net none \
 	-kernel "$elf" \
 	-nographic \
-	-s \
 	"$@" < /dev/null
