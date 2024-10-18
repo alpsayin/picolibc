@@ -73,7 +73,7 @@ foreach params : targets
 				      pic: false,
 				      objects : libobjs,
 				      include_directories: inc,
-				      c_args: target_c_args + c_args)
+				      c_args: ['-Os'] + target_c_args + c_args)
 
   static_library(join_paths(target_dir, target_lib_prefix + libm_name),
 		 ['empty.c'],
