@@ -75,8 +75,16 @@ longjmp:
     lwi     r28, r5, 64                        
     lwi     r29, r5, 68                        
     lwi     r30, r5, 72
-    lwi     r31, r5, 76                                            
+
+    /* Minor optimization: perform r31 restoration in delay slot */
+    beqid   r6, dont_return_zero
+    lwi     r31, r5, 76
 
     rtsd    r15, 8
     or      r3, r0, r6
+
+dont_return_zero:
+    rtsd    r15, 8
+    ori     r3, r0, 1
+
 .end longjmp    
