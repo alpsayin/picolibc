@@ -580,6 +580,8 @@ run_vector_1 (int vector,
     }
     else if (strcmp(args,"ddd")==0)
      {
+       if(p->line >= 259 && (strcmp(name, "fmod")==0))
+         printf("--- ALP: START ddd test %s:%d\n", name,  p->line);
        typedef double (*pdblfunc) (double,double);
 
        result = ((pdblfunc)(func))(arg1,arg2);

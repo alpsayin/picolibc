@@ -25,6 +25,12 @@ static const __float64
     one = _F_64(1.0),
     Zero[] = { _F_64(0.0), _F_64(-0.0) };
 
+#include <stdio.h>
+
+#define _CONDITION (x == -6.2831853071795862 && y == -2.2831853071795862)
+// #define _CONDITION (0)
+#define PRINTF_COND(...) do { if(_CONDITION) { printf("--- ALP: " __VA_ARGS__); } } while(0)
+
 __float64
 fmod64(__float64 x, __float64 y)
 {
@@ -33,9 +39,13 @@ fmod64(__float64 x, __float64 y)
 
     EXTRACT_WORDS(hx, lx, x);
     EXTRACT_WORDS(hy, ly, y);
+    PRINTF_COND("hx=0x%lx, lx=0x%lx, hy=0x%lx, ly=0x%lx\n", hx, lx, hy, ly);
     sx = hx & 0x80000000; /* sign of x */
+    PRINTF_COND("sx=0x%lx\n", sx);
     hx ^= sx; /* |x| */
+    PRINTF_COND("hx=0x%lx\n", hx);
     hy &= 0x7fffffff; /* |y| */
+    PRINTF_COND("hy=0x%lx\n", hy);
 
     /* purge off exception values */
     if (isnan(x) || isnan(y)) /* x or y nan, return nan */
@@ -65,9 +75,13 @@ fmod64(__float64 x, __float64 y)
         }
     } else
         ix = (hx >> 20) - 1023;
+#if THIS_PRINTF_MAGICALLY_FIXES_IT
+    PRINTF_COND("ix=0x%lx\n", ix);
+#endif
 
     /* determine iy = ilogb(y) */
-    if (hy < 0x00100000) { /* subnormal y */
+    int subnormal_y = hy < 0x00100000;
+    if (subnormal_y) { /* subnormal y */
         if (hy == 0) {
             for (iy = -1043, i = ly; i > 0; i <<= 1)
                 iy -= 1;
@@ -75,8 +89,12 @@ fmod64(__float64 x, __float64 y)
             for (iy = -1022, i = (hy << 11); i > 0; i <<= 1)
                 iy -= 1;
         }
-    } else
+        // PRINTF_COND("subnormal y: iy=0x%lx\n", iy);
+    } else {
         iy = (hy >> 20) - 1023;
+        // PRINTF_COND("normal y: iy=0x%lx\n", iy);
+    }
+    PRINTF_COND("subnormal_y=%x iy=0x%lx\n", subnormal_y, iy);
 
     /* set up {hx,lx}, {hy,ly} and align y to x */
     if (ix >= -1022)
@@ -91,6 +109,7 @@ fmod64(__float64 x, __float64 y)
             lx = 0;
         }
     }
+    // PRINTF_COND("hx=0x%lx, lx=0x%lx, n=0x%lx\n", hx, lx, n);
     if (iy >= -1022)
         hy = 0x00100000 | (0x000fffff & hy);
     else { /* subnormal y, shift y to normal */
@@ -103,9 +122,11 @@ fmod64(__float64 x, __float64 y)
             ly = 0;
         }
     }
+    // PRINTF_COND("hy=0x%lx, ly=0x%lx, n=0x%lx\n", hy, ly, n);
 
     /* fix point fmod */
     n = ix - iy;
+    // PRINTF_COND("n=0x%lx\n", n);
     while (n--) {
         hz = hx - hy;
         lz = lx - ly;
