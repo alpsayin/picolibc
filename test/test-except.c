@@ -62,7 +62,25 @@ main(void)
 
 #elif defined(__MICROBLAZE__)
 
-    __asm__(".word 0x00000000");
+    unsigned int pvr2_value;
+
+    /* Read processor version register 2 */
+    __asm__ volatile (
+        "mfs %0, rpvr2"
+        : "=r" (pvr2_value)
+    );
+
+    /* Bit 27 tells if processor will generate an exception for
+     * illegal instructions or treat them as NOP.
+     * As per ug984 Microblaze Processor Reference guide.
+     */
+    if (pvr2_value & (1 << 27)) {
+        __asm__ volatile (".word 0x00000000");
+    }
+    else {
+        printf("no invalid instruction defined for target\n");
+        return 77;
+    }
 
 #else
 
