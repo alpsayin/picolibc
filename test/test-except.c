@@ -67,19 +67,49 @@ main(void)
 #elif defined(__x86_64__) || defined(__i386__)
 
     __asm__("ud2");
+#elif defined(__MICROBLAZE__)
+
+    unsigned int pvr_value;
+
+    /* Read processor version register 0 */
+    __asm__ volatile ("mfs %0, rpvr0": "=r" (pvr_value));
+
+    /* If PVR reads all zeroes, no PVR is implemented.
+     * Bit 0 tells if PVR[1-12] is implemented.
+     */
+    if (pvr_value == 0 || ((pvr_value & 1) == 0)) {
+        /* Can't tell if processor generates exceptions
+         * for any illegal opcode; play it safe and return.
+         */
+        goto no_invalid_exception;
+    }
+
+    /* Read processor version register 2 */
+    __asm__ volatile ( "mfs %0, rpvr2" : "=r" (pvr_value));
+
+    /* Bit 27 tells if processor generates exceptions for
+     * bad instructions or if it treats them as NOPs.
+     */
+    if (pvr_value & (1 << 27)) {
+        /* All zeroes will generate illegal-opcode exception */
+        __asm__ volatile (".word 0x00000000");
+    }
+    else {
+        /* All undefined instructions are treated as NOPs */
+        goto no_invalid_exception;
+    }
 
 #else
 
-#define NO_INVALID
+goto no_invalid_exception;
 
 #endif
 
-#ifdef NO_INVALID
-    printf("no invalid instruction defined for target\n");
-    return 77;
-#else
     printf("ERROR: invalid instruction worked\n");
     return 0;
-#endif
+
+no_invalid_exception:
+    printf("no invalid instruction defined for target\n");
+    return 77;
 
 }
