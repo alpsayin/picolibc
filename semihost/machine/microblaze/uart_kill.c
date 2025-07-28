@@ -40,7 +40,4 @@
 
 pid_t getpid(void) { return 1; }
 
-#if 0
-/* suppress warning: no previous prototype for 'kill' */
 int kill(pid_t pid, int sig) { if (pid == 1) _exit(128 + sig); errno = ESRCH; return -1; }
-#endif
