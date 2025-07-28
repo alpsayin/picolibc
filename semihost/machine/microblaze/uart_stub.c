@@ -92,10 +92,13 @@ off_t lseek(int fd, off_t offset, int whence)
 	return (off_t) -1;
 }
 
+#if 0
+/* suppress warning: no previous prototype for 'lseek64' */
 _off64_t lseek64(int fd, _off64_t offset, int whence)
 {
 	return (_off64_t) lseek(fd, (off_t) offset, whence);
 }
+#endif
 
 int
 unlink(const char *pathname)
