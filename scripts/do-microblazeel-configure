@@ -40,5 +40,5 @@ exec "$(dirname "$0")"/do-configure microblazeel-zephyr-elf \
   -Dtests-enable-stack-protector=false \
   -Dtests=true \
   -Dtests-enable-posix-io=false \
-  -Dmultilib-list=.,bs,le,m,m/mh,le/m,le/m/mh,bs/le,bs/m,bs/m/mh,bs/le/m,bs/le/m/mh \
+  -Dmultilib-list=. \
   "$@"
