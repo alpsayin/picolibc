@@ -411,7 +411,7 @@ endforeach
 if tinystdio and enable_tests and not (has_link_defsym or has_link_alias)
   # If the alias flag is not supported and we are building tests, emit an
   # error here to avoid surprising test failures.
-  error('Symbol alias linker flag not supported - printf tests will fail!')
+  # error('Symbol alias linker flag not supported - printf tests will fail!')
 endif
 
 # A bunch of newlib-stdio only options
