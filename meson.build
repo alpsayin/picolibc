@@ -315,6 +315,9 @@ endforeach
 has_link_defsym = meson.get_cross_property('has_link_defsym', has_link_defsym)
 has_link_alias = meson.get_cross_property('has_link_alias', has_link_alias)
 
+message('has_link_defsym: ', has_link_defsym)
+message('has_link_alias: ', has_link_alias)
+
 # If an empty linker command line doesn't work, then pass the alias
 # argument computed above when performing compiler tests involving
 # linking
@@ -332,6 +335,7 @@ endif
 # Find the compiler support library
 
 lib_gcc = [meson.get_cross_property('libgcc', false)]
+message('lib_gcc: ', lib_gcc)
 
 if lib_gcc == [false]
   lib_gcc = []
@@ -342,6 +346,8 @@ if lib_gcc == [false]
     endif
   endforeach
 endif
+
+message('lib_gcc after: ', lib_gcc)
 
 # Add libgcc for use in future linking tests
 
@@ -454,8 +460,9 @@ endif
 if host_cpu_family == ''
   host_cc_machine=run_command(cc.cmd_array() + ['-dumpmachine'], check : true).stdout().strip().split('-')
   host_cpu_family=host_cc_machine[0]
-  message('Computed host_cpu_family as ' + host_cpu_family)
 endif
+
+message('Computed host_cpu_family as ' + host_cpu_family)
 
 tls_model_spec = ''
 thread_local_storage = false
@@ -472,6 +479,9 @@ endif
 if thread_local_storage
   tls_model_spec = '%{!ftls-model:-ftls-model=' + get_option('tls-model') + '}'
 endif
+
+message('thread_local_storage: ', thread_local_storage)
+message('have_picolibc_tls_api: ', have_picolibc_tls_api)
 
 stack_guard_spec = ''
 stack_guard_option = get_option('stack-protector-guard')
