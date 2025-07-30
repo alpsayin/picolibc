@@ -54,9 +54,7 @@ _interrupt:
 _hw_except:	
 	bri	_hw_except
 _start1:
-        la	r1, r0, __stack-16
-	la	r2, r0, __sdata
-	la	r13, r0, __sdata
+  la	r1, r0, __stack-16
 	addi	r15, r0, 0
 	bri	_cstart
 	nop
