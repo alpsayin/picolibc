@@ -38,7 +38,7 @@
 	.globl	_start
 	.ent	_start
 	.type	_start, @function
-	.align	2
+	.align	4
 _start:
 	bri	_start1
 	. = _start + 0x8
@@ -48,11 +48,19 @@ _start:
 	. = _start + 0x20
 	bri	_hw_except
 _user_except:
+#ifdef CRT0_SEMIHOST
+	bri _semihost_trap
+#else
 	bri	_user_except
+#endif
 _interrupt:
 	bri	_interrupt
-_hw_except:	
+_hw_except:
+#ifdef CRT0_SEMIHOST
+	bri _semihost_trap
+#else
 	bri	_hw_except
+#endif
 _start1:
   la	r1, r0, __stack-16
 	addi	r15, r0, 0
@@ -60,3 +68,61 @@ _start1:
 	nop
 	.end	_start
 
+
+#ifdef CRT0_SEMIHOST
+	.globl	_semihost_trap
+	.ent	_semihost_trap
+	.type	_semihost_trap, @function
+	.align	4
+	.extern _semihost_exception_coredump
+_semihost_trap:
+	/* Offsets here mumst match trap.c indexes */
+	/* Stash r11 beforehand */
+	swi r11, r0, _semihost_exception_coredump + (11 * 4)
+
+	/* Stack MSR using r11(temp1) */
+	mfs r11, rmsr
+	swi r11, r0, _semihost_exception_coredump + (0 * 4)
+
+	swi r1, r0, _semihost_exception_coredump + (1 * 4)
+	/* Save the registers */
+	swi r2, r0, _semihost_exception_coredump + (2 * 4)
+	swi r3, r0, _semihost_exception_coredump + (3 * 4)
+	swi r4, r0, _semihost_exception_coredump + (4 * 4)
+	swi r5, r0, _semihost_exception_coredump + (5 * 4)
+	swi r6, r0, _semihost_exception_coredump + (6 * 4)
+	swi r7, r0, _semihost_exception_coredump + (7 * 4)
+	swi r8, r0, _semihost_exception_coredump + (8 * 4)
+	swi r9, r0, _semihost_exception_coredump + (9 * 4)
+	swi r10, r0, _semihost_exception_coredump +	(10 * 4)
+	/* Skip r11 because we stashed it first */
+	swi r12, r0, _semihost_exception_coredump +	(12 * 4)
+	swi r13, r0, _semihost_exception_coredump +	(13 * 4)
+	swi r14, r0, _semihost_exception_coredump +	(14 * 4)
+	swi r15, r0, _semihost_exception_coredump +	(15 * 4)
+	swi r16, r0, _semihost_exception_coredump +	(16 * 4)
+	swi r17, r0, _semihost_exception_coredump +	(17 * 4)
+	swi r18, r0, _semihost_exception_coredump +	(18 * 4)
+	swi r19, r0, _semihost_exception_coredump +	(19 * 4)
+	swi r20, r0, _semihost_exception_coredump +	(20 * 4)
+	swi r21, r0, _semihost_exception_coredump +	(21 * 4)
+	swi r22, r0, _semihost_exception_coredump +	(22 * 4)
+	swi r23, r0, _semihost_exception_coredump +	(23 * 4)
+	swi r24, r0, _semihost_exception_coredump +	(24 * 4)
+	swi r25, r0, _semihost_exception_coredump +	(25 * 4)
+	swi r26, r0, _semihost_exception_coredump +	(26 * 4)
+	swi r27, r0, _semihost_exception_coredump +	(27 * 4)
+	swi r28, r0, _semihost_exception_coredump +	(28 * 4)
+	swi r29, r0, _semihost_exception_coredump +	(29 * 4)
+	swi r30, r0, _semihost_exception_coredump +	(30 * 4)
+	swi r31, r0, _semihost_exception_coredump +	(31 * 4)
+
+	mfs r11, resr
+	swi r11, r0, _semihost_exception_coredump + (32 * 4)
+	mfs r11, rear
+	swi r11, r0, _semihost_exception_coredump + (33 * 4)
+	mfs r11, redr
+	swi r11, r0, _semihost_exception_coredump + (34 * 4)
+
+	brai _semihost_ctrap
+#endif
