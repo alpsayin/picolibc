@@ -59,6 +59,4 @@ _start1:
 	bri	_cstart
 	nop
 	.end	_start
-1:	
-	.size	_start,1b-_start
 
